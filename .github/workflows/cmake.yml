@@ -27,7 +27,8 @@ jobs:
     steps:
     - run: sudo apt update && sudo apt install ninja-build
     - uses: actions/checkout@v4
-
+      with:
+        submodules: true
     - name: Configure
       run: cmake -B ${{github.workspace}}/build -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=${{ matrix.abi }}
     - name: Build
@@ -39,7 +40,10 @@ jobs:
         path: |
           build/*.so
   publish:
+    needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
     - uses: actions/download-artifact@v4
       with:
