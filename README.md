@@ -1,6 +1,8 @@
-# mcpelauncherupdates
+# mcpelauncher-imgui-fps-hud
 
-This is a mod for mcpelauncher-manifest to allow newer Minecraft Versions to run.
+This is a mod for mcpelauncher-manifest to display a fps counter.
+
+![Screenshot](./screenshot.png)
 
 ## Building
 `PATH_TO_NDK="/path/to/ndk"`

@@ -1,0 +1,58 @@
+name: CMake
+
+on:
+  push:
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        abi: ["x86_64", "arm64-v8a", "x86", "armeabi-v7a" ]
+        include:
+        - abi: x86_64
+          ndktarget: x86_64-linux-android-
+        - abi: x86
+          ndktarget: i686-linux-android-
+        - abi: armeabi-v7a
+          openssltarget: android-arm
+          ndktarget: arm-linux-androideabi-
+        - abi: arm64-v8a
+          openssltarget: android-arm64
+          ndktarget: aarch64-linux-android-
+    steps:
+    - run: sudo apt update && sudo apt install ninja-build
+    - uses: actions/checkout@v4
+
+    - name: Configure
+      run: cmake -B ${{github.workspace}}/build -G Ninja -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_HOME}/build/cmake/android.toolchain.cmake -DANDROID_ABI=${{ matrix.abi }}
+    - name: Build
+      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+    
+    - uses: actions/upload-artifact@v4
+      with:
+        name: mcpelauncher-imgui-fps-hud-${{format('android-{0}', matrix.abi)}}
+        path: |
+          build/*.so
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v4
+      with:
+        path: "artifacts"
+        merge-multiple: true
+        pattern: mcpelauncher-imgui-fps-hud-*
+    - uses: ncipollo/release-action@v1
+      with:
+        allowUpdates: true
+        replacesArtifacts: true
+        artifacts: "artifacts/*.so"
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag: snapshot-${{ github.run_number }}.${{ github.run_attempt }}
+        commit: ${{ github.sha }}
+        body: |
+          Put the .so files into the mods folder and the fps hud should appear if it is the only mod in the folder
