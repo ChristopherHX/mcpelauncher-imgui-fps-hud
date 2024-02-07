@@ -18,3 +18,7 @@ This is a mod for mcpelauncher-manifest to display a fps counter.
 - arm64-v8a
 
   `cmake -DCMAKE_TOOLCHAIN_FILE=$PATH_TO_NDK/build/cmake/android.toolchain.cmake -DANDROID_ABI=arm64-v8a ..`
+
+## Requirements
+- either mcpelauncher v0.13.0 and newer on macOS or usage of `mcpelauncher-client` flag `-fes`
+- on linux it should be backward compatible to v0.3.0
